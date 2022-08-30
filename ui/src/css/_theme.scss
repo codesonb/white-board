@@ -1,0 +1,21 @@
+$red    : #ff4a4d;
+$blue   : #4a50ff;
+$green  : #4dff4a;
+$yellow : #ffa54a;
+
+$red_light    : #ffb0ad;
+$blue_light   : #b2adff;
+$green_light  : #adffb9;
+$yellow_light : #ffd9ad;
+
+$red_dark    : #ad3030;
+$blue_dark   : #3030ad;
+$green_dark  : #30ad30;
+$yellow_dark : #ad6f30;
+
+.modal {
+  position: fixed;
+  left: calc(50vw);
+  top: calc(50vh);
+  transform: translate(-50%, -50%);
+}

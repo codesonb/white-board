@@ -1,0 +1,23 @@
+version: "3.8"
+
+networks:
+  wb-netext:
+    driver: bridge
+
+services:
+  nginx:
+    restart: unless-stopped
+    container_name: wb-nginx
+    image: nginx:alpine
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - wb-netext
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      - db:host-gateway
+      - api:host-gateway
+      - ui:host-gateway

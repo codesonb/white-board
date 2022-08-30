@@ -1,0 +1,76 @@
+version: "3.8"
+volumes:
+  db-mssql:
+    name: wb-db-mssql
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./db
+
+networks:
+  wb-netint:
+    driver: bridge
+    internal: true
+  wb-netext:
+    driver: bridge
+
+services:
+  nginx:
+    restart: unless-stopped
+    container_name: wb-nginx
+    image: nginx:alpine
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - wb-netext
+      - wb-netint
+    ports:
+      - 80:80
+      - 443:443
+
+  db:
+    restart: unless-stopped
+    container_name: wb-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    volumes:
+      - db-mssql:/var/opt/mssql/data
+    ports:
+      - 2433:1433
+    networks:
+      - wb-netext
+      - wb-netint
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=qwer1234
+      - MSSQL_PID=Express
+
+  api:
+    restart: unless-stopped
+    container_name: wb-api
+    depends_on:
+      - db
+    build:
+      context: ./api
+      dockerfile: ../.docker/api/Dockerfile
+    working_dir: /app/wb-api
+    networks:
+      - wb-netext
+      - wb-netint
+    ports:
+      - 82:7000
+
+  ui:
+    restart: unless-stopped
+    container_name: wb-ui
+    build:
+      context: ./ui
+      dockerfile: ../.docker/ui/Dockerfile
+    working_dir: /app/wb-ui
+    volumes:
+      - ./ui:/app/wb-ui
+    networks:
+      - wb-netint
+
